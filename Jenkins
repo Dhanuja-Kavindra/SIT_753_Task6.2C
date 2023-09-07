@@ -1,0 +1,94 @@
+pipeline{
+    agent any
+   
+    stages{
+        stage('Build'){
+            steps{
+                echo "Code fetched from https://github.com/Dhanuja-Kavindra/SIT_753_Task6.2C.git"
+                echo "Bulding started using Maven"
+                echo "Build finished"
+            }
+        }
+
+        stage('Unit and Integration Tests'){
+            steps{
+                echo "Unit tests stareted with NUint"
+                echo "Unit tests finished."
+                echo "Intergration tests started with Selenium"
+                echo "Intergration tests finished."
+            }
+            post {
+                failure {
+                    emailext(
+                        to: 'spdanuja@gmail.com',
+                        subject: "Unit and Integration Test Failed",
+                        body: 'Unit and Integration Test failed. Check the attached logs for details.',
+                        attachLog: true 
+                    )      
+                }
+                success {
+                    emailext(
+                        to: 'spdanuja@gmail.com',
+                        subject: 'Unit and Integration Test Succeeded',
+                        body: 'Unit and Integration Test succeeded. Check the attached logs for details.',
+                        attachLog: true     
+                    ) 
+                }
+            }
+
+        }
+
+        stage('Code Analysis'){
+            steps{
+                echo "Code analysis started with Checkmarx"
+                echo "Code analysis finished"
+            }
+        }
+
+        stage('Security Scan'){
+            steps{
+                echo "Security scans started with 42Crunch"
+                echo "Security scans finsihed"
+            }
+            post {
+                failure {
+                    emailext(
+                        to: 'spdanuja@gmail.com',
+                        subject: 'Security Scan Failed',
+                        body: 'Security Scan failed. Check the attached logs for details.',
+                        attachLog: true  
+                    ) 
+                }
+                success {
+                    emailext(
+                        to: 'spdanuja@gmail.com',
+                        subject: 'Security Scan Succeeded',
+                        body: 'Security Scan succeeded. Check the attached logs for details.',
+                        attachLog: true 
+                    )   
+                }
+            }
+        }
+
+        stage('Deploy to Staging'){
+            steps{
+                echo "Stagging deployment started"
+                echo "Deployed to AWS EC2 instance-id: i-1234567890abcdef0 staging server"
+            }
+        }
+
+        stage('Integration Tests on Staging'){
+            steps{
+                echo "Intergration tests started with Selenium"
+                echo "Intergration tests finished."
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "Stagging deployment started"
+                echo "Deployed to AWS EC2 instance-id: i-8884567890abcdef0 staging server"
+            }
+        }
+    }
+}
